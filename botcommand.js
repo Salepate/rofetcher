@@ -16,7 +16,7 @@ const dbreader = require("./dbreader.js");
         let killCount = parseInt(args[1]);
         let failRate = 1.0 - dropRate;
         let chance = 1.0 - Math.pow(failRate, killCount);
-        let chance = Math.floor(chance * 1000) / 10;
+        chance = Math.floor(chance * 1000) / 10;
         let response = `Chance to drop at least once (${dropRate*100}%) with ${killCount} tries: ${chance}%`;
         return response;
     }
