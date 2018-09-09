@@ -5,7 +5,8 @@ const auth = require('./auth.json');
 (function dbReader(reader)
 {
     let _InitCallback = null;
-    let _itemDescs = {}
+    let _itemDescs = {};
+    let _itemCache = {};
 
     reader.getItem = function (itemID)
     {
@@ -161,10 +162,16 @@ const auth = require('./auth.json');
             if ( !itemObj.ID )
                 return;
 
+            _itemCache[itemIndex] = true;
             itemTable.push(itemObj);
         });
     }
 
+    reader.isValidItem = function(itemID)
+    {
+        return _itemCache[itemID];
+    }
+    
     reader.initialize = function(settings, initCb)
     {
         reader.db = settings.db;

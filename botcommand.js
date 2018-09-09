@@ -5,6 +5,8 @@ const dbreader = require("./dbreader.js");
 {
     _commands = {}
 
+    bot.InvokerID = null;
+
     //-----------------------------------------------------------
     // - User Commands
     //-----------------------------------------------------------
@@ -38,9 +40,94 @@ const dbreader = require("./dbreader.js");
             + ` chance of success with a droprate of ${dropRate*100}%`;
     }
 
+    // !wish
+    function wish(args, responseCallback)
+    {
+        let items = [];
+        let response = [];
+
+        for(let i = 1; i < args.length; ++i)
+        {
+            let idx = parseInt(args[i]);
+            if ( dbreader.isValidItem(idx) )
+                items.push(idx);
+
+            else
+                response.push(`invalid ${idx}`);
+        }
+
+        if ( args[0] === 'help')
+        {
+            responseCallback(`show\nadd <item_id1> <item_id2> ...\nremove <item_id1> <item_id2> ...`);
+        }
+        if ( args[0] == 'add')
+        {
+            dbreader.db.collection("wishitem").find({'userid': bot.InvokerID}).toArray(function(err, result)
+            {
+                result.forEach(function(item)
+                {
+                    let amount = item.amount;
+                    for(let i = items.length; i >= 0; --i)
+                    {
+                        if ( item.itemid == items[i] )
+                        {
+                            item.amount += 1;
+                            items = items.splice(i,i);
+                        }
+                    }    
+
+                    if ( amount != item.amount)
+                    {
+                        console.log("updating existing item");
+                        dbreader.db.collection('wishitem').updateOne(
+                            {'userid': bot.InvokerID, 'itemid': item.itemid}, 
+                            {$set: { 'amount': item.amount}}
+                        );
+                    }
+                })
+
+                // adding non existent items
+                items.forEach((item)=>
+                {
+                    console.log('adding new item');
+                    dbreader.db.collection('wishitem').insertOne({'userid': bot.InvokerID, 'itemid': item, 'amount': 1});
+                });
+
+                if ( response.length == 0 )
+                    responseCallback(`updating wish list`);
+                else
+                    responseCallback(`updating wish list\n${response.join(' ')}`);
+            });
+        }
+        if ( args[0] === 'remove')
+        {
+            let documents = [];
+            items.forEach((item)=>
+            {
+                dbreader.db.collection("wishitem").deleteOne({'userid': bot.InvokerID, 'itemid': item});
+            });
+
+            responseCallback('removing items from list');
+        }
+        if ( args[0] == 'show')
+        {
+            dbreader.db.collection("wishitem").find({ 'userid': bot.InvokerID}).toArray((err, res)=>
+            {
+                let items = [];
+                res.forEach((item)=>
+                {
+                    items.push(`<${item.itemid} : ${item.amount}>`);
+                });
+
+                if ( items.length == 0 )
+                    items.push('<empty wish list>');
+                let resp = '```' + items.join(' ') + '```';
+                responseCallback(resp);
+            });
+        }
+    }
+
     // !item
-
-
     function findItem(args, responseCallback)
     {
         let itemID = 0;
@@ -118,7 +205,7 @@ const dbreader = require("./dbreader.js");
     registerCommand("odd", 2, odd, "<droprate> <killcount> // compute the odd for at least one success in n tries");
     registerCommand("luck", 2, luck, "<droprate> <odd> // compute the number of tries to achieve a certain success (<100%)");
     registerCommand("help", 0, help, "display available commands", false, false);
-
+    registerCommand("wish", 1, wish, "<command> // manage wish list (use !wish help)", true, false);
     //-----------------------------------------------------------
     // - Public API
     //-----------------------------------------------------------
@@ -144,7 +231,7 @@ const dbreader = require("./dbreader.js");
         return _commands[commandName].Async;
     }
 
-    bot.invokeCommand = function(commandName, args, asyncResponseCb)
+    bot.invokeCommand = function(uid, commandName, args, asyncResponseCb)
     {
         return _commands[commandName].Func(args, asyncResponseCb);
     }

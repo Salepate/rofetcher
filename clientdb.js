@@ -22,6 +22,7 @@
             console.log("connected to mongodb");
             client.db = db.db(auth.mongodb.database);
             client.db.createCollection("channels");
+            client.db.createCollection("wishitem");
 
             if ( endCb != null )
                 endCb({ db: client.db});

@@ -72,10 +72,10 @@ const settings = require('./settings.json');
                     
                     if ( botcommand.isAsync(commandName) )
                     {
-                        botcommand.invokeCommand(commandName, commandArgs, messageCb);
+                        botcommand.invokeCommand(userID,commandName, commandArgs, messageCb);
                     }
                     else
-                        response = botcommand.invokeCommand(commandName, commandArgs) ;
+                        response = botcommand.invokeCommand(userID, commandName, commandArgs) ;
     
                     if ( commandResponse != null )
                         response = '```\n' + commandResponse + '```\n';
