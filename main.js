@@ -1,12 +1,15 @@
 const Discord = require('discord.io');
 const auth = require('./auth.json');
 const client = require('./client.js');
+const clientdb = require('./clientdb.js');
 const dbreader = require('./dbreader.js');
+const chain = require('./chaincommand.js');
 
+chain.addCommand(clientdb.initialize);
+chain.addCommand(dbreader.initialize);
+chain.addCommand(client.initialize);
 
-dbreader.initialize(onDatabaseReady);
-
-function onDatabaseReady()
+chain.execute((err)=>
 {
-    client.initialize();
-}
+    console.log('bot started successfully');
+});

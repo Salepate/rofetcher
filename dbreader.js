@@ -87,23 +87,15 @@ const auth = require('./auth.json');
         // create db
         let mongoClient = mongodb.MongoClient;
         let url = `${auth.mongodb.host}/${auth.mongodb.db}`;
-        
-        mongoClient.connect(url, function(err, db)
-        {
-            if (err) throw err;
-            console.log("database created");
-            let dbo = db.db(auth.mongodb.db);
-            reader.db = dbo;
-            dbo.createCollection("items", function(err, res)
-            {
-                if ( err)
-                    throw err;
 
-                console.log("items table created");
-                initReader();
-            });
-                
-        });
+        reader.db.createCollection("items", function(err, res)
+        {
+            if ( err)
+                throw err;
+
+            console.log("items table created");
+            initReader();
+        });     
     }
 
     function initReader()
@@ -173,8 +165,9 @@ const auth = require('./auth.json');
         });
     }
 
-    reader.initialize = function(initCb)
+    reader.initialize = function(settings, initCb)
     {
+        reader.db = settings.db;
         _InitCallback = initCb;
         initMongo();
     }

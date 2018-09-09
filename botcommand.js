@@ -117,7 +117,7 @@ const dbreader = require("./dbreader.js");
     registerCommand("item", 1, findItem, "<item name | item id> // look up for item in database and display description", true, false);
     registerCommand("odd", 2, odd, "<droprate> <killcount> // compute the odd for at least one success in n tries");
     registerCommand("luck", 2, luck, "<droprate> <odd> // compute the number of tries to achieve a certain success (<100%)");
-    registerCommand("help", 0, help, "display available commands", false);
+    registerCommand("help", 0, help, "display available commands", false, false);
 
     //-----------------------------------------------------------
     // - Public API
