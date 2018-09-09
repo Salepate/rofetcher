@@ -1,6 +1,6 @@
 {
     "name": "ro-fetcher",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "Salepate <salepate@gmail.com>",
     "description": "discord bot to provide with some Ragnarok Online related commands",
     "license": "MIT",
@@ -12,6 +12,6 @@
     },
     "dependencies": {
         "discord.io": "github:woor/discord.io#4333acbc6f15542971f7503f4c1b1a07976a6615",
-        "npm-check": "^5.8.0"
+        "mongodb": "^3.1.4"
     }
 }

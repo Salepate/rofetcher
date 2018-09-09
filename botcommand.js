@@ -16,8 +16,12 @@ const dbreader = require("./dbreader.js");
         let killCount = parseInt(args[1]);
         let failRate = 1.0 - dropRate;
         let chance = 1.0 - Math.pow(failRate, killCount);
+        let printedRate = `${dropRate*100}`;
+        printedRate = printedRate.substring(0, 5);
         chance = Math.floor(chance * 1000) / 10;
-        let response = `Chance to drop at least once (${dropRate*100}%) with ${killCount} tries: ${chance}%`;
+
+
+        let response = `Chance to drop at least once (${printedRate}%) with ${killCount} tries: ${chance}%`;
         return response;
     }
 
@@ -35,12 +39,13 @@ const dbreader = require("./dbreader.js");
     }
 
     // !item
-    function findItem(args)
+
+
+    function findItem(args, responseCallback)
     {
         let itemID = 0;
         let itemName = args[0];
-
-
+ 
         if ( args.length == 1)
         {
             itemID = parseInt(args[0]);
@@ -50,13 +55,34 @@ const dbreader = require("./dbreader.js");
             itemName = args.join(' ');
         }
 
+        let findItemCb = (result) =>
+        {
+            if ( result.length > 0 )
+            {
+                let response = [];
+
+                for(let i = 0; i < result.length && i < 3; ++i)
+                {
+                    let id = result[i].ID;
+                    let desc = `${result[i].DisplayName} (${id})\n${dbreader.getItem(id)}`;
+                    response.push(desc);
+                }
+
+                responseCallback('```' + response.join('```\n```') + '```');
+            }
+            else 
+            {
+                responseCallback(`${itemName} not found`);
+            }
+        }               
+
         if ( itemID > 0 )
         {
-            return dbreader.getItem(itemID);
+            dbreader.findItemByID(itemID, findItemCb);
         }
         else 
         {
-            return dbreader.findItem(itemName);
+            dbreader.findItem(itemName, findItemCb);
         }
     }
 
@@ -73,7 +99,7 @@ const dbreader = require("./dbreader.js");
         return response;
     }
 
-    function registerCommand(commandName, argCount, func, usage, strictArg = true)
+    function registerCommand(commandName, argCount, func, usage, async = false, strictArg = true)
     {
         assert.equal(commandName in _commands, false, "Command " + commandName + " already registered");
 
@@ -82,12 +108,13 @@ const dbreader = require("./dbreader.js");
             Args: argCount,
             Func: func,
             Use: usage,
-            Strict: strictArg
+            Strict: strictArg,
+            Async: async
         }
     }
 
 
-    registerCommand("item", 1, findItem, "<item name | item id> // look up for item in database and display description", false);
+    registerCommand("item", 1, findItem, "<item name | item id> // look up for item in database and display description", true, false);
     registerCommand("odd", 2, odd, "<droprate> <killcount> // compute the odd for at least one success in n tries");
     registerCommand("luck", 2, luck, "<droprate> <odd> // compute the number of tries to achieve a certain success (<100%)");
     registerCommand("help", 0, help, "display available commands", false);
@@ -112,9 +139,14 @@ const dbreader = require("./dbreader.js");
         return _commands[commandName].Use;
     }
 
-    bot.invokeCommand = function(commandName, args)
+    bot.isAsync = function(commandName)
     {
-        return _commands[commandName].Func(args);
+        return _commands[commandName].Async;
+    }
+
+    bot.invokeCommand = function(commandName, args, asyncResponseCb)
+    {
+        return _commands[commandName].Func(args, asyncResponseCb);
     }
 
 })(typeof exports == 'undefined'? this.botcommand = {} : exports);
