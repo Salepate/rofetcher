@@ -83,22 +83,6 @@ const auth = require('./auth.json');
         return name;
     }
 
-    function initMongo()
-    {
-        // create db
-        let mongoClient = mongodb.MongoClient;
-        let url = `${auth.mongodb.host}/${auth.mongodb.db}`;
-
-        reader.db.createCollection("items", function(err, res)
-        {
-            if ( err)
-                throw err;
-
-            console.log("items table created");
-            initReader();
-        });     
-    }
-
     function initReader()
     {
         console.log('Reading item_db.txt');
@@ -120,7 +104,11 @@ const auth = require('./auth.json');
 
             reader.db.dropCollection("items");
             let items = reader.db.collection("items");
-            items.createIndex( { DisplayName: "text" } );
+            items.createIndex( { DisplayName: 'text' }, {background: false}, (err, evt)=>
+            {
+                if ( err )
+                    throw err;
+            });
 
             
             itemTable.forEach((item)=>
@@ -176,7 +164,7 @@ const auth = require('./auth.json');
     {
         reader.db = settings.db;
         _InitCallback = initCb;
-        initMongo();
+        initReader();
     }
 
 })(typeof exports === 'undefined'? this.dbReader = {} : exports);
