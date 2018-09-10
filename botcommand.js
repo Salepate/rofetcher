@@ -43,6 +43,7 @@ const dbreader = require("./dbreader.js");
     // !wish
     function wish(args, responseCallback)
     {
+        let uid = bot.InvokerID; // small fix for async use
         let items = [];
         let response = [];
 
@@ -62,7 +63,7 @@ const dbreader = require("./dbreader.js");
         }
         if ( args[0] == 'add')
         {
-            dbreader.db.collection("wishitem").find({'userid': bot.InvokerID}).toArray(function(err, result)
+            dbreader.db.collection("wishitem").find({'userid': uid}).toArray(function(err, result)
             {
                 result.forEach(function(item)
                 {
@@ -80,7 +81,7 @@ const dbreader = require("./dbreader.js");
                     {
                         console.log("updating existing item");
                         dbreader.db.collection('wishitem').updateOne(
-                            {'userid': bot.InvokerID, 'itemid': item.itemid}, 
+                            {'userid': uid, 'itemid': item.itemid}, 
                             {$set: { 'amount': item.amount}}
                         );
                     }
@@ -90,7 +91,7 @@ const dbreader = require("./dbreader.js");
                 items.forEach((item)=>
                 {
                     console.log('adding new item');
-                    dbreader.db.collection('wishitem').insertOne({'userid': bot.InvokerID, 'itemid': item, 'amount': 1});
+                    dbreader.db.collection('wishitem').insertOne({'userid': uid, 'itemid': item, 'amount': 1});
                 });
 
                 if ( response.length == 0 )
@@ -104,14 +105,14 @@ const dbreader = require("./dbreader.js");
             let documents = [];
             items.forEach((item)=>
             {
-                dbreader.db.collection("wishitem").deleteOne({'userid': bot.InvokerID, 'itemid': item});
+                dbreader.db.collection("wishitem").deleteOne({'userid': uid, 'itemid': item});
             });
 
             responseCallback('removing items from list');
         }
         if ( args[0] == 'show')
         {
-            dbreader.db.collection("wishitem").find({ 'userid': bot.InvokerID}).toArray((err, wishlist)=>
+            dbreader.db.collection("wishitem").find({ 'userid': uid}).toArray((err, wishlist)=>
             {
                 let items = [];
                 wishlist.forEach((item)=>
@@ -251,7 +252,10 @@ const dbreader = require("./dbreader.js");
 
     bot.invokeCommand = function(uid, commandName, args, asyncResponseCb)
     {
-        return _commands[commandName].Func(args, asyncResponseCb);
+        bot.InvokerID = uid;
+        let res = _commands[commandName].Func(args, asyncResponseCb);
+        bot.InvokerID = null; // better not keep it cached
+        return res;
     }
 
 })(typeof exports == 'undefined'? this.botcommand = {} : exports);
