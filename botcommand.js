@@ -111,18 +111,36 @@ const dbreader = require("./dbreader.js");
         }
         if ( args[0] == 'show')
         {
-            dbreader.db.collection("wishitem").find({ 'userid': bot.InvokerID}).toArray((err, res)=>
+            dbreader.db.collection("wishitem").find({ 'userid': bot.InvokerID}).toArray((err, wishlist)=>
             {
                 let items = [];
-                res.forEach((item)=>
+                wishlist.forEach((item)=>
                 {
-                    items.push(`<${item.itemid} : ${item.amount}>`);
+                    // items.push(`<${item.itemid} : ${item.amount}>`);
+                    items.push(item.itemid);
                 });
 
-                if ( items.length == 0 )
-                    items.push('<empty wish list>');
-                let resp = '```' + items.join(' ') + '```';
-                responseCallback(resp);
+
+                if ( items.length > 0 )
+                {
+                    dbreader.db.collection("items").find({"ID": { "$in" : items}}).toArray((err, res)=>
+                    {
+                        let response = [];
+    
+                        for(let i = 0; i < res.length; ++i)
+                        {
+                            let itemDesc = res[i];
+
+                            response.push(`${itemDesc.DisplayName} (${itemDesc.ID}) : ${wishlist[i].amount}`);
+                        }
+
+                        responseCallback('```\n: wish list :\n' + response.join('\n') + '\n```');
+                    });
+                }
+                else 
+                {
+                    responseCallback('<empty wish list>');
+                }
             });
         }
     }
