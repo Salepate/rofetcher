@@ -1,15 +1,33 @@
 const assert = require('assert');
 const dbreader = require("./dbreader.js");
+const commands = require("./documents/commands.json");
 
 (function botcommand(bot)
 {
     _commands = {}
 
+    bot.client = null;
     bot.InvokerID = null;
-
+    bot.ChannelID = null;
+    bot.Channel = null;
     //-----------------------------------------------------------
     // - User Commands
     //-----------------------------------------------------------
+
+    // !allow
+    function allow()
+    {
+            
+        bot.client.allowChannel(bot.ChannelID);
+        return `allowed channel #${bot.Channel.name}`;
+    }
+
+    // !unallow
+    function unallow()
+    {
+        bot.client.removeChannel(bot.ChannelID);
+        return `removed channel #${bot.Channel.name} from whitelist`;
+    }
 
     // !odd
     function odd(args)
@@ -220,6 +238,8 @@ const dbreader = require("./dbreader.js");
     }
 
 
+    registerCommand("allow", 0, allow, "// [admin] whitelist the channel (allow bot commands)");
+    registerCommand("unallow", 0, unallow, "// [admin] remove channel from whitelist");
     registerCommand("item", 1, findItem, "<item name | item id> // look up for item in database and display description", true, false);
     registerCommand("odd", 2, odd, "<droprate> <killcount> // compute the odd for at least one success in n tries");
     registerCommand("luck", 2, luck, "<droprate> <odd> // compute the number of tries to achieve a certain success (<100%)");
@@ -250,12 +270,28 @@ const dbreader = require("./dbreader.js");
         return _commands[commandName].Async;
     }
 
-    bot.invokeCommand = function(uid, commandName, args, asyncResponseCb)
+    bot.invokeCommand = function(commandName, args, asyncResponseCb)
     {
-        bot.InvokerID = uid;
         let res = _commands[commandName].Func(args, asyncResponseCb);
         bot.InvokerID = null; // better not keep it cached
         return res;
+    }
+
+    bot.getCommandSettings = function(commandName)
+    {
+        return commands[commandName];
+    }
+
+    bot.clearCache = function()
+    {
+        bot.InvokerID = null;
+        bot.ChannelID = null;
+        bot.Channel = null;
+    }
+
+    bot.setClient = function(client)
+    {
+        bot.client = client;
     }
 
 })(typeof exports == 'undefined'? this.botcommand = {} : exports);

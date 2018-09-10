@@ -12,6 +12,15 @@ const settings = require('./settings.json');
     let _settings = {};
 
 
+    let isAdmin = function(roles)
+    {
+        for(let i = 0; i < roles.length; ++i)
+            if ( (roles[i].permissions & 8) == 8 )
+                return true;
+        return false;
+    }
+
+
     client.channels = [];
 
     client.onClientReady = function()
@@ -21,13 +30,21 @@ const settings = require('./settings.json');
         if ( _endCallback != null )
             _endCallback();
     }
+
+    
     
     client.onClientMessage = function(user, userID, channelID, message, evt)
     {
+        if ( userID == _proxy.id ) // ignore self
+            return;
+
         let sendResponse = false;
         let sendPrivate = false;
         let response = "";
-    
+        let channel = _proxy.channels[channelID];
+        let server = _proxy.servers[channel.guild_id];
+        let admin = server.owner_id == userID;
+
         let allowBot = settings.require_allow ? client.channels.includes(channelID) : true;
 
         let messageCb = function(msg)
@@ -37,46 +54,35 @@ const settings = require('./settings.json');
                 message: msg
             });
         };
-    
+
         if ( message.startsWith('!'))
         {
             args = message.split(' ');
             commandName = args[0].substring(1);
 
-            
-            if ( commandName === 'allow')
+            if ( botcommand.isCommand(commandName))
             {
-                client.allowChannel(channelID);
-                sendPrivate = true;
-                sendResponse = true;
+                let settings = botcommand.getCommandSettings(commandName);
+                let canInvoke = admin || (settings.level == 0 && allowBot);
+                sendPrivate = settings.send_private;
 
-                let channel = _proxy.channels[channelID];
-                response = `allowed channel #${channel.name}`;
-            }
-            else if ( commandName === 'unallow')
-            {
-                client.removeChannel(channelID);
-                sendPrivate = true;
-                sendResponse = true;
-                let channel = _proxy.channels[channelID];
-                response = `removed channel #${channel.name} from whitelist`;
-            }
-
-            if ( botcommand.isCommand(commandName) && allowBot)
-            {
-                if ( botcommand.isValidCommand(commandName, args.length - 1))
+                if ( botcommand.isValidCommand(commandName, args.length - 1) && canInvoke)
                 {
                     commandArgs = args.slice(1);
                     
                     let commandResponse = null;
+
+                    botcommand.InvokerID = userID;
+                    botcommand.ChannelID = channelID;
+                    botcommand.Channel = channel;
                     
                     if ( botcommand.isAsync(commandName) )
-                    {
-                        botcommand.invokeCommand(userID,commandName, commandArgs, messageCb);
-                    }
+                        botcommand.invokeCommand(commandName, commandArgs, messageCb);
                     else
-                        response = botcommand.invokeCommand(userID, commandName, commandArgs) ;
-    
+                        response = botcommand.invokeCommand(commandName, commandArgs) ;
+
+                    botcommand.clearCache();
+                                            
                     if ( commandResponse != null )
                         response = '```\n' + commandResponse + '```\n';
                 }
@@ -143,6 +149,7 @@ const settings = require('./settings.json');
             });
         });
         
+        botcommand.setClient(client);
 
         clientProxy.on('ready', client.onClientReady);
         clientProxy.on('message', client.onClientMessage);

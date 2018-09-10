@@ -1,0 +1,43 @@
+{
+    "allow":
+    {
+        "level": 1,
+        "send_private": true
+    },
+
+    "unallow":
+    {
+        "level": 1,
+        "send_private": true
+    },
+
+    "wish":
+    {
+        "level": 0,
+        "send_private": false
+    },
+
+    "item":
+    {
+        "level": 0,
+        "send_private": false
+    },
+
+    "odd":
+    {
+        "level": 0,
+        "send_private": false
+    },
+
+    "luck":
+    {
+        "level": 0,
+        "send_private": false
+    },    
+
+    "help":
+    {
+        "level": 0,
+        "send_private": true
+    }
+}
