@@ -104,7 +104,7 @@ const auth = require('./auth.json');
 
             reader.db.dropCollection("items");
             let items = reader.db.collection("items");
-            items.createIndex( { DisplayName: 'text' }, {background: false}, (err, evt)=>
+            items.createIndex( { DisplayName: 'text', Name: 'text' }, {background: false}, (err, evt)=>
             {
                 if ( err )
                     throw err;
