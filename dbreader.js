@@ -138,12 +138,16 @@ const auth = require('./auth.json');
             let itemIndex = parseInt(itemData[0]);
             let itemName = `${itemData[1]}`;
             let displayName = `${itemData[2]}`.replace(/_/g, ' ');
+            let slots = parseInt(itemData[10]);
+
+            if ( slots > 0 )
+                displayName += `[${slots}]`;
 
             let itemObj =
             {
                 ID: itemIndex,
                 Name: itemName.toLowerCase(),
-                DisplayName: displayName
+                DisplayName: displayName,
             };
 
             
