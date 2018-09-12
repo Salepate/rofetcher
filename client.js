@@ -31,7 +31,9 @@ const settings = require('./settings.json');
             _endCallback();
     }
 
-    
+
+    client.getUsers = function() { return _proxy.users; }
+
     
     client.onClientMessage = function(user, userID, channelID, message, evt)
     {
@@ -75,6 +77,7 @@ const settings = require('./settings.json');
                     botcommand.InvokerID = userID;
                     botcommand.ChannelID = channelID;
                     botcommand.Channel = channel;
+                    botcommand.Server = server;
                     
                     if ( botcommand.isAsync(commandName) )
                         botcommand.invokeCommand(commandName, commandArgs, messageCb);

@@ -10,6 +10,7 @@ const commands = require("./documents/commands.json");
     bot.InvokerID = null;
     bot.ChannelID = null;
     bot.Channel = null;
+    bot.Server = null;
     //-----------------------------------------------------------
     // - User Commands
     //-----------------------------------------------------------
@@ -130,7 +131,42 @@ const commands = require("./documents/commands.json");
         }
         if ( args[0] == 'show')
         {
-            dbreader.db.collection("wishitem").find({ 'userid': uid}).toArray((err, wishlist)=>
+            let users = bot.client.getUsers();
+            let targetUser = uid;
+            let targetUserName = bot.Server.members[uid].nick;
+
+            if ( targetUserName == null )
+                targetUserName = users[uid].username;
+
+
+            if ( args.length > 1 )
+            {
+                let nick = args.slice(1).join(' ').toLowerCase();
+                let found = false;
+
+                Object.keys(bot.Server.members).forEach((uid)=>
+                {
+                    let member = bot.Server.members[uid];
+                    let memberName = member.nick;
+                    if ( memberName == null )
+                        memberName = users[uid].username;
+
+                    if ( memberName.toLowerCase() == nick )
+                    {
+                        targetUser = uid;
+                        targetUserName = memberName;
+                        found = true;
+                    }
+                });
+
+                if ( !found )
+                {
+                    responseCallback('```' + `unknown user ${nick}` + '```');
+                    return;
+                }
+            }
+
+            dbreader.db.collection("wishitem").find({ 'userid': targetUser}).toArray((err, wishlist)=>
             {
                 let items = [];
                 wishlist.forEach((item)=>
@@ -153,7 +189,7 @@ const commands = require("./documents/commands.json");
                             response.push(`${itemDesc.DisplayName} (${itemDesc.ID}) : ${wishlist[i].amount}`);
                         }
 
-                        responseCallback('```\n: wish list :\n' + response.join('\n') + '\n```');
+                        responseCallback('```\n: ' + targetUserName + ' wish list :\n' + response.join('\n') + '\n```');
                     });
                 }
                 else 
@@ -287,6 +323,7 @@ const commands = require("./documents/commands.json");
         bot.InvokerID = null;
         bot.ChannelID = null;
         bot.Channel = null;
+        bot.Server = null;
     }
 
     bot.setClient = function(client)
