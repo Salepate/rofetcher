@@ -2,42 +2,46 @@
     "allow":
     {
         "level": 1,
-        "send_private": true
+        "description": "whitelist the channel (allow user commands)"
     },
 
     "unallow":
     {
         "level": 1,
-        "send_private": true
-    },
-
-    "wish":
-    {
-        "level": 0,
-        "send_private": false
+        "description": "remove channel from whitelist (disallow user commands)"
     },
 
     "item":
     {
         "level": 0,
-        "send_private": false
+        "description": "find an item matching id or name given",
+        "use": "<item name | item id>"
     },
 
     "odd":
     {
         "level": 0,
-        "send_private": false
+        "description": "compute odds for at least one success in nth tries",
+        "use": "<droprate> <killcount>"
     },
 
     "luck":
     {
         "level": 0,
-        "send_private": false
-    },    
+        "description": "compute needed tries to achieve a certain successrate",
+        "use": "<droprate> <odd>"
+    },
+
+    "wish":
+    {
+        "level": 0,
+        "description": "handle user wishlist (use !wish help)",
+        "use": "<command> [item/nick] (check !wish help)"
+    },
 
     "help":
     {
         "level": 0,
-        "send_private": true
+        "description": "display user commands"
     }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const Discord = require('discord.io');
 const auth = require('./auth.json');
 const client = require('./client.js');
@@ -16,3 +17,8 @@ chain.execute((err)=>
 {
     console.log('bot started successfully');
 });
+=======
+const bot = require('./lib/bot.js');
+
+bot.startBot();
+>>>>>>> dev
