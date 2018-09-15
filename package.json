@@ -1,9 +1,5 @@
 {
     "name": "ro-fetcher",
-<<<<<<< HEAD
-    "version": "0.0.3",
-=======
->>>>>>> dev
     "author": "Salepate <salepate@gmail.com>",
     "version": "0.1.0",
     "main": "main.js",
