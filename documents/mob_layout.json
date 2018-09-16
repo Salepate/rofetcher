@@ -1,0 +1,7 @@
+{
+    "id": { "id": 0, "required": true },
+    "name": { "id": 2, "flags": { "lower": true } },
+    "display_name": { "id": 3, "flags": { "display": true} },
+    "drop_ids": {"id":37, "range": 10, "stride": 2, "flags": { "int": true}},
+    "drop_rates": {"id":38, "range": 10, "stride": 2, "flags": {"float": true}}
+}

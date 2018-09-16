@@ -1,0 +1,6 @@
+{
+    "id": { "id": 0, "flags" : { "int": true }, "required": true },
+    "name": { "id": 1, "flags": { "lower": true } },
+    "display_name": { "id": 2, "flags": { "display": true} },
+    "slots": {"id":10, "flags": { "int": true} }
+}
