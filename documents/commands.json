@@ -43,5 +43,11 @@
     {
         "level": 0,
         "description": "display user commands"
+    },
+
+    "rates":
+    {
+        "level": 0,
+        "description": "set the server rates"
     }
 }
