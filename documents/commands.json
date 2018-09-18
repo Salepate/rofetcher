@@ -51,11 +51,4 @@
         "description": "set the server rates",
         "use": "<base> <job> <drop>"
     },
-
-    "mob":
-    {
-        "level": 0,
-        "description": "look for a mob",
-        "use": "<monster name | monster id>"
-    }
 }
