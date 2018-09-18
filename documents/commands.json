@@ -50,5 +50,5 @@
         "level": 0,
         "description": "set the server rates",
         "use": "<base> <job> <drop>"
-    },
+    }
 }
