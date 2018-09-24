@@ -57,5 +57,12 @@
         "level": 0,
         "description": "look for a mob",
         "use": "<monster name | monster id>"
+    },
+
+    "disguise":
+    {
+        "level": 1,
+        "description": "setup disguise auto event",
+        "use": "<channel> <interval (minutes)> <mobcount>"
     }
 }

@@ -2,6 +2,12 @@
     "id": { "id": 0, "required": true },
     "name": { "id": 2, "flags": { "lower": true } },
     "display_name": { "id": 3, "flags": { "display": true} },
+    "level": { "id": 4, "flags": { "int": true}},
+    "hp": { "id": 5, "flags": { "int": true}},
+    "base": { "id": 7, "flags": { "int": true}},
+    "job": { "id": 8, "flags": { "int": true}},
+    "agi": { "id": 16, "flags": { "int": true}},
+    "dex": { "id": 19, "flags": { "int": true}},
     "drop_ids": {"id":37, "range": 10, "stride": 2, "flags": { "int": true}},
     "drop_rates": {"id":38, "range": 10, "stride": 2, "flags": {"float": true}}
 }
