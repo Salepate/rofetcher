@@ -1,6 +1,6 @@
 {
-    "id": { "id": 0, "required": true },
-    "name": { "id": 2, "flags": { "lower": true } },
+    "id": { "id": 0, "required": true, "flags": { "int": true} },
+    "name": { "id": 2, "flags": { "lower": true} },
     "display_name": { "id": 3, "flags": { "display": true} },
     "level": { "id": 4, "flags": { "int": true}},
     "hp": { "id": 5, "flags": { "int": true}},
